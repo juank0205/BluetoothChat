@@ -24,11 +24,11 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import BluetoothListView from './app/bluetooth/views/bluetoothListView';
+import BluetoothList from './app/bluetooth/views/bluetoothList';
 
 function App(): JSX.Element {
   return (
-	<BluetoothListView />
+	<BluetoothList />
   );
 }
 
