@@ -24,7 +24,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import BluetoothList from './app/bluetooth/views/bluetoothList';
+import BluetoothList from './src/bluetooth/views/bluetoothView';
 
 function App(): JSX.Element {
   return (
