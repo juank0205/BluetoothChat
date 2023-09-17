@@ -5,9 +5,14 @@ import {
 	FlatList,
 } from 'react-native'
 
-import Layout from '../components/bluetoothListLayout'
-import Empty from '../components/Empty'
+// Components
+import Layout from '../components/bluetoothList'
+import Empty from '../components/empty'
 import Toggle from '../components/toggle'
+import Subtitle from '../components/subtitle'
+
+//Libraries
+import BluetoothSerial from 'react-native-bluetooth-serial-next'
 
 function BluetoothList(props) {
 	const list = [
@@ -20,11 +25,12 @@ function BluetoothList(props) {
 			key: '2',
 		}
 	]
-	const renderEmpty = () => <Empty text='No hay dispositivos'/>
+	const renderEmpty = () => <Empty text='No available devices'/>
 
 	return (
 		<Layout title="Bluetooth">
 			<Toggle/>		
+			<Subtitle title="Devices found"/>	
 			<FlatList
 				data={list}
 				ListEmptyComponent={renderEmpty}

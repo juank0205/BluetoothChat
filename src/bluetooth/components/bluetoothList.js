@@ -5,7 +5,7 @@ import{
 	StyleSheet
 } from 'react-native'
 
-function BluetoothListLayout(props){
+function BluetoothList(props){
 	return(
 		<View style={styles.container}>
 			<Text style={styles.title}>{props.title}</Text>
@@ -26,4 +26,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default BluetoothListLayout
+export default BluetoothList
