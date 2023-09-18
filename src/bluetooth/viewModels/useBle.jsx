@@ -1,20 +1,23 @@
 import { PermissionsAndroid, Platform } from "react-native";
 import { useState } from "react";
-import { BleManager, Device } from "react-native-ble-plx";
 
 import DeviceInfo from 'react-native-device-info';
 import BluetoothSerial from "react-native-bluetooth-serial";
 import { PERMISSIONS, requestMultiple } from "react-native-permissions";
-import { setEnabled } from "react-native/Libraries/Performance/Systrace";
-
-
-const bleManager = new BleManager();
 
 export default function useBle() {
   const [allDevices, setAllDevices] = useState([]);
   const [unpairedDevices, setUnpairedDevices] = useState([]);
   const [connected, setConnected] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
+
+  BluetoothSerial.on('connectionSuccess', () => {
+    console.log("conectado, waos")
+  });
+
+  BluetoothSerial.on('connectionLost', () => {
+    console.log("chao")
+  });
 
   let discovering = false;
 
@@ -52,28 +55,6 @@ export default function useBle() {
     }
   };
 
-  const isDuplicateDevice = (devices, nextDevice) => {
-    if (devices.length == 0) return false;
-    else {
-      const repeated = devices.findIndex(device => (nextDevice.id === device.id)) > -1;
-      return (repeated && (nextDevice.rssi == null ? false : (nextDevice.rssi < 50)));
-    }
-  }
-
-  const scanForDevices = () => {
-    bleManager.startDeviceScan(null, { allowDuplicates: false }, (error, device) => {
-      if (error) {
-        console.log(error);
-      }
-      setAllDevices(prevState => {
-        if (!isDuplicateDevice(prevState, device)) {
-          return [...prevState, device];
-        }
-        return prevState;
-      })
-    })
-  }
-
   const enable = async () => {
     await BluetoothSerial.enable();
     setIsEnabled(true);
@@ -82,12 +63,12 @@ export default function useBle() {
   const disable = async () => {
     await BluetoothSerial.disable();
     setIsEnabled(false);
-  }
+  };
 
   const listDevices = async () => {
     let devices = await BluetoothSerial.list();
-    setUnpairedDevices((prevState) => [...prevState, ...devices])
-  }
+    setAllDevices((prevState) => [...prevState, ...devices])
+  };
 
   const discoverUnpaired = () => {
     console.log(discovering);
@@ -102,23 +83,63 @@ export default function useBle() {
 
             return accumulator;
           }, []));
-          discovering = false;
           console.log(unpairedDevices);
         }).catch(err => {
           console.log(err);
+        });
+    };
+  }
+  const isConnected = async () => {
+    console.log(await BluetoothSerial.isConnected());
+    return await BluetoothSerial.isConnected();
+  };
+
+  const connect = async id => {
+    if (connected) return false;
+    else {
+      await BluetoothSerial.connect(id)
+        .then(res => {
+          setConnected(true);
+          console.log(res);
         })
+        .catch(err => console.log(err));
     }
+  }
+
+  const disconnect = async () => {
+    if (!connected) return false;
+    else {
+      await BluetoothSerial.disconnect()
+        .then(res => {
+          setConnected(false);
+          console.log(res);
+        })
+        .catch(err => console.log(err));
+    }
+  }
+
+  const write = (data) => {
+    BluetoothSerial.write(data)
+    .then((res) => {
+      console.log("Escrito: " + data);
+    })
+    .catch( err => console.log(err));
   }
 
   return {
     requestPermissions,
-    // scanForDevices,
+    setAllDevices,
+    setUnpairedDevices,
     allDevices,
     unpairedDevices,
     isEnabled,
     enable,
     disable,
     listDevices,
-    discoverUnpaired
+    discoverUnpaired,
+    isConnected,
+    connect,
+    disconnect,
+    write
   }
 }
