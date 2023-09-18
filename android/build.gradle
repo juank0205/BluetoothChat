@@ -1,4 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+include ':react-native-bluetooth-serial'
+project(':react-native-bluetooth-serial').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-bluetooth-serial/android')
 
 buildscript {
     ext {
@@ -12,12 +14,24 @@ buildscript {
         // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
         ndkVersion = "23.1.7779620"
     }
+    subprojects { subproject ->
+        afterEvaluate{
+            if((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
+                android {
+                    compileSdkVersion rootProject.ext.compileSdkVersion
+                    buildToolsVersion rootProject.ext.buildToolsVersion
+                }
+            }
+        }
+    }
     repositories {
         google()
         mavenCentral()
+	maven { url 'https://www.jitpack.io' }
     }
     dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
+        compile project(':react-native-bluetooth-serial')
     }
 }

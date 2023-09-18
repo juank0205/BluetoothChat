@@ -8,17 +8,23 @@ import {
 	Image,
 } from 'react-native';
 
+//Components 
+import Separator from './separator';
+
 function Device(props) {
 	return (
-		<TouchableOpacity style={styles.wrapper} onPress={props.onPress}>
-			<View style={styles.wrapperLeft}>
-				<Image style={styles.iconLeft} source={props.iconLeft}/>
-			</View>
-			<View style={styles.wrapperName}>
-				<Text style={styles.name}>{props.name}</Text>
-			</View>
-			<Image style={styles.iconRight} source={props.iconRight}/>
-		</TouchableOpacity>
+		<>
+			<TouchableOpacity style={styles.wrapper} onPress={props.onPress}>
+				<View style={styles.wrapperLeft}>
+					<Image style={styles.iconLeft} source={props.iconLeft} />
+				</View>
+				<View style={styles.wrapperName}>
+					<Text style={styles.name}>{props.name}</Text>
+				</View>
+				<Image style={styles.iconRight} source={props.iconRight} />
+			</TouchableOpacity>
+			<Separator />
+		</>
 	);
 }
 
