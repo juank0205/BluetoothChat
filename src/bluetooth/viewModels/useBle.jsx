@@ -12,11 +12,21 @@ export default function useBle() {
   const [isEnabled, setIsEnabled] = useState(false);
 
   BluetoothSerial.on('connectionSuccess', () => {
-    console.log("conectado, waos")
+    console.log("Conected");
   });
 
   BluetoothSerial.on('connectionLost', () => {
-    console.log("chao")
+    console.log("Connection lost");
+  });
+
+  BluetoothSerial.on('bluetoothEnabled', () => {
+    console.log("Bluetooth enabled");
+    console.log("Enabled: " + isEnabled);
+  });
+
+  BluetoothSerial.on('bluetoothDisabled', () => {
+    console.log("Bluetooth disabled")
+    console.log("Enabled: " + isEnabled);
   });
 
   let discovering = false;
@@ -55,19 +65,34 @@ export default function useBle() {
     }
   };
 
-  const enable = async () => {
-    await BluetoothSerial.enable();
-    setIsEnabled(true);
+  const syncToggle = async () => {
+    console.log("syncing" + await BluetoothSerial.isEnabled());
+    if (await BluetoothSerial.isEnabled()) setIsEnabled(true);
+    else setIsEnabled(false);
+    console.log("enabled: " + isEnabled);
   }
 
-  const disable = async () => {
-    await BluetoothSerial.disable();
-    setIsEnabled(false);
-  };
+  const toggle = async () => {
+    if (isEnabled) {
+      await BluetoothSerial.disable().then(() => {
+        setIsEnabled(false);
+      });
+    } else {
+      await BluetoothSerial.enable().then(() => {
+        setIsEnabled(true);
+        listDevices();
+        discoverUnpaired();
+      });
+    }
+  }
 
   const listDevices = async () => {
     let devices = await BluetoothSerial.list();
-    setAllDevices((prevState) => [...prevState, ...devices])
+    setAllDevices((prevState) => [...prevState, ...devices].reduce((accumulator, currentItem) => {
+            const exists = accumulator.some(item => item.id === currentItem.id);
+            if (!exists) accumulator.push(currentItem);
+            return accumulator;
+          }, []));
   };
 
   const discoverUnpaired = () => {
@@ -83,7 +108,7 @@ export default function useBle() {
 
             return accumulator;
           }, []));
-          console.log(unpairedDevices);
+          console.log("descubiertos:" + unpairedDevices);
         }).catch(err => {
           console.log(err);
         });
@@ -95,11 +120,12 @@ export default function useBle() {
   };
 
   const connect = async id => {
-    if (connected) return false;
+    if (connected || discovering) return false;
     else {
       await BluetoothSerial.connect(id)
         .then(res => {
           setConnected(true);
+          discovering = true;
           console.log(res);
         })
         .catch(err => console.log(err));
@@ -112,6 +138,7 @@ export default function useBle() {
       await BluetoothSerial.disconnect()
         .then(res => {
           setConnected(false);
+          discovering = true;
           console.log(res);
         })
         .catch(err => console.log(err));
@@ -120,10 +147,10 @@ export default function useBle() {
 
   const write = (data) => {
     BluetoothSerial.write(data)
-    .then((res) => {
-      console.log("Escrito: " + data);
-    })
-    .catch( err => console.log(err));
+      .then((res) => {
+        console.log("Escrito: " + data);
+      })
+      .catch(err => console.log(err));
   }
 
   return {
@@ -133,13 +160,15 @@ export default function useBle() {
     allDevices,
     unpairedDevices,
     isEnabled,
-    enable,
-    disable,
+    toggle,
+    syncToggle,
     listDevices,
     discoverUnpaired,
     isConnected,
     connect,
     disconnect,
-    write
+    write,
+    isEnabled
+
   }
 }

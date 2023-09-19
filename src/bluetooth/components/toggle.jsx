@@ -9,7 +9,7 @@ import{
 function Toggle(props){
 	return(
 		<View style={styles.container}>
-			<Text style={styles.text}>ON</Text>
+			<Text style={styles.text}>{props.value? 'ON':'OFF'}</Text>
 			<Switch style={styles.switch} value={props.value} onValueChange={props.onValueChange}/>
 		</View>
 	)
