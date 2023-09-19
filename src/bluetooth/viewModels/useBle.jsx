@@ -1,4 +1,4 @@
-import { PermissionsAndroid, Platform } from "react-native";
+import { PermissionsAndroid, Platform, ToastAndroid } from "react-native";
 import { useState } from "react";
 
 import DeviceInfo from 'react-native-device-info';
@@ -89,10 +89,10 @@ export default function useBle() {
   const listDevices = async () => {
     let devices = await BluetoothSerial.list();
     setAllDevices((prevState) => [...prevState, ...devices].reduce((accumulator, currentItem) => {
-            const exists = accumulator.some(item => item.id === currentItem.id);
-            if (!exists) accumulator.push(currentItem);
-            return accumulator;
-          }, []));
+      const exists = accumulator.some(item => item.id === currentItem.id);
+      if (!exists) accumulator.push(currentItem);
+      return accumulator;
+    }, []));
   };
 
   const discoverUnpaired = () => {
@@ -114,32 +114,36 @@ export default function useBle() {
         });
     };
   }
+
+  const syncIsConnected = async () => {
+    let flag = await BluetoothSerial.isConnected();
+    setConnected(flag);
+  }
+
   const isConnected = async () => {
-    console.log(await BluetoothSerial.isConnected());
     return await BluetoothSerial.isConnected();
   };
 
   const connect = async id => {
-    if (connected || discovering) return false;
+    if (await isConnected()) return false;
     else {
       await BluetoothSerial.connect(id)
         .then(res => {
-          setConnected(true);
-          discovering = true;
-          console.log(res);
+          console.log("is connected: " + connected)
+          setConnected(true)
+          ToastAndroid.show(res.message, ToastAndroid.SHORT);
         })
         .catch(err => console.log(err));
     }
   }
 
   const disconnect = async () => {
-    if (!connected) return false;
+    if (!(await isConnected())) return false;
     else {
       await BluetoothSerial.disconnect()
         .then(res => {
-          setConnected(false);
-          discovering = true;
-          console.log(res);
+          setConnected(false)
+          ToastAndroid.show("Disconnected", ToastAndroid.SHORT);
         })
         .catch(err => console.log(err));
     }
@@ -168,7 +172,8 @@ export default function useBle() {
     connect,
     disconnect,
     write,
-    isEnabled
-
+    isEnabled,
+    connected,
+    syncIsConnected
   }
 }
