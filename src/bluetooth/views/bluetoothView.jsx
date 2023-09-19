@@ -1,7 +1,9 @@
 import {
   View,
   Button,
+  Text
 } from 'react-native'
+import CheckBox from '@react-native-community/checkbox';
 import { useEffect } from 'react';
 
 
@@ -11,7 +13,7 @@ import Toggle from '../components/toggle'
 import useBle from '../viewModels/useBle'
 import DeviceContainer from '../components/deviceListContainer'
 
-function BluetoothList(props) {
+function BluetoothList({ navigation }) {
   const { isEnabled,
     allDevices,
     unpairedDevices,
@@ -22,7 +24,10 @@ function BluetoothList(props) {
     discoverUnpaired,
     toggle,
     syncToggle,
-    isConnected } = useBle();
+    isConnected,
+    disconnect,
+    connected,
+    syncIsConnected } = useBle();
 
   useEffect(() => {
     const startBluetooth = async () => {
@@ -30,28 +35,41 @@ function BluetoothList(props) {
         if (isGranted) {
           setUnpairedDevices([]);
           setAllDevices([]);
+          syncIsConnected();
           syncToggle();
           listDevices();
           discoverUnpaired();
+
         }
       })
     }
     startBluetooth();
   }, [])
 
+  const startChat = async () => {
+    console.log(connected);
+    console.log(await isConnected())
+    if (await isConnected()) {
+      navigation.navigate('Chat')
+    }
+  }
+
   return (
-    <Layout title="Bluetooth">
-      <View style={{ height: '25%' }}>
+    <Layout>
+      <View style={{ height: '20%' }}>
         <Toggle value={isEnabled} onValueChange={toggle} />
         <Button title="Scan" onPress={() => {
           discoverUnpaired();
           listDevices();
         }} />
-        <View style={{ paddingTop: 10 }}>
-          <Button title="Start chat" onPress={isConnected} />
-        </View>
       </View>
-      <DeviceContainer listDevices={allDevices} unpairedDevices={unpairedDevices} isEnabled={isEnabled} image={require('../../assets/sad.png')}/>
+      <DeviceContainer listDevices={allDevices} unpairedDevices={unpairedDevices} isEnabled={isEnabled} image={require('../../assets/sad.png')} />
+      <View style={{ paddingTop: 10, }}>
+        <Button title="Start chat" onPress={startChat} />
+      </View>
+      <View style={{ paddingTop: 10, }}>
+        <Button title="Disconnect" onPress={disconnect} />
+      </View>
     </Layout>
   );
 }

@@ -11,11 +11,11 @@ const DeviceContainer = (props) => {
   return (
     <>
       <View style={props.isEnabled ? styles.devices_enabled : styles.devices_disabled}>
-        <DeviceList style={{ height: '30%' }}
+        <DeviceList style={{ height: '50%' }}
           title='Devices Paired'
           data={props.listDevices}
         />
-        <DeviceList style={{ height: '30%' }}
+        <DeviceList style={{ height: '50%' }}
           title='Devices Found'
           data={props.unpairedDevices}
         />
