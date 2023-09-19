@@ -66,8 +66,10 @@ export default function useBle() {
   };
 
   const syncToggle = async () => {
+    console.log("syncing" + await BluetoothSerial.isEnabled());
     if (await BluetoothSerial.isEnabled()) setIsEnabled(true);
     else setIsEnabled(false);
+    console.log("enabled: " + isEnabled);
   }
 
   const toggle = async () => {

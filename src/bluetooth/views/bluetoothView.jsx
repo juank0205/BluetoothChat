@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react'
 import {
   View,
   Button,
 } from 'react-native'
+import { useEffect } from 'react';
 
 
 // Components
@@ -11,20 +11,22 @@ import Toggle from '../components/toggle'
 import useBle from '../viewModels/useBle'
 import DeviceContainer from '../components/deviceListContainer'
 
-function BluetoothList(props: any) {
-  const { requestPermissions,
-    discoverUnpaired,
-    listDevices,
-    isConnected,
+function BluetoothList(props) {
+  const { isEnabled,
+    allDevices,
+    unpairedDevices,
     setUnpairedDevices,
     setAllDevices,
-    isEnabled,
+    requestPermissions,
+    listDevices,
+    discoverUnpaired,
     toggle,
-    syncToggle } = useBle();
+    syncToggle,
+    isConnected } = useBle();
 
   useEffect(() => {
     const startBluetooth = async () => {
-      requestPermissions((isGranted: boolean) => {
+      await requestPermissions((isGranted) => {
         if (isGranted) {
           setUnpairedDevices([]);
           setAllDevices([]);
@@ -49,7 +51,7 @@ function BluetoothList(props: any) {
           <Button title="Start chat" onPress={isConnected} />
         </View>
       </View>
-      <DeviceContainer />
+      <DeviceContainer listDevices={allDevices} unpairedDevices={unpairedDevices} isEnabled={isEnabled} image={require('../../assets/sad.png')}/>
     </Layout>
   );
 }
