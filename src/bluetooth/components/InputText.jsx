@@ -4,23 +4,31 @@ import {
   SafeAreaView,
   StyleSheet,
   TextInput,
+  ToastAndroid,
   View
 } from 'react-native';
+import useBle from '../viewModels/useBle';
 
 const InputText = () => {
   const [message, setMessage] = useState('');
+  const { write } = useBle();
 
   const send = () => {
-    console.log("A");
+    ToastAndroid.show('Written: ' + message, ToastAndroid.SHORT);
+    write(message);
   }
+
 
   return (
     <SafeAreaView style={styles.container}>
       <TextInput
-        onChangeText={setMessage}
+        editable
+        multiline
+        numberOfLines={4}
+        maxLength={40}
+        onChangeText={text => setMessage(text)}
         value={message}
         style={styles.textInput}
-        placeholder="Enter your message"
       />
       <View style={styles.button}>
         <Button title='Send' onPress={send} />
@@ -31,6 +39,7 @@ const InputText = () => {
 
 const styles = StyleSheet.create({
   container: {
+    minHeight: '100%',
     flexDirection: 'row',
     height: 40,
     bottom: 0,
@@ -38,13 +47,16 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   textInput: {
-    width: '70%',
-    height: 40,
+    width: '100%',
+    height: '100%',
     margin: 12,
     borderWidth: 1,
     padding: 10,
   },
   button: {
+    position: 'absolute',
+    bottom: 10,
+    end: 10,
     width: '20%'
   }
 })

@@ -1,9 +1,9 @@
 import {
   View,
   Button,
-  Text
+  StyleSheet,
+  SafeAreaView
 } from 'react-native'
-import CheckBox from '@react-native-community/checkbox';
 import { useEffect } from 'react';
 
 
@@ -56,7 +56,7 @@ function BluetoothList({ navigation }) {
 
   return (
     <Layout>
-      <View style={{ height: '20%' }}>
+      <View style={styles.topContainer}>
         <Toggle value={isEnabled} onValueChange={toggle} />
         <Button title="Scan" onPress={() => {
           discoverUnpaired();
@@ -64,14 +64,28 @@ function BluetoothList({ navigation }) {
         }} />
       </View>
       <DeviceContainer listDevices={allDevices} unpairedDevices={unpairedDevices} isEnabled={isEnabled} image={require('../../assets/sad.png')} />
-      <View style={{ paddingTop: 10, }}>
-        <Button title="Start chat" onPress={startChat} />
-      </View>
-      <View style={{ paddingTop: 10, }}>
-        <Button title="Disconnect" onPress={disconnect} />
-      </View>
+      <SafeAreaView style={styles.bottomContainer}>
+        <View style={styles.deviceContainer}>
+          <Button title="Start chat" onPress={startChat} />
+        </View>
+        <View style={styles.deviceContainer}>
+          <Button title="Disconnect" onPress={disconnect} />
+        </View>
+      </SafeAreaView>
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  topContainer: {
+    height: '15%',
+  },
+  deviceContainer: {
+    paddingTop: 10,
+  },
+  bottomContainer: {
+    width: '100%',
+  }
+})
 
 export default BluetoothList

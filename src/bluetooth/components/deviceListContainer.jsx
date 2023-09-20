@@ -31,11 +31,11 @@ const DeviceContainer = (props) => {
 }
 const styles = StyleSheet.create({
   container_disabled: {
-    display: 'none'
+    display: 'none',
   },
   container_enabled: {
     alignItems: 'center',
-    height: '50%',
+    height: '70%',
     justifyContent: 'center',
     display: 'flex'
   },
@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
     display: 'none'
   },
   devices_enabled: {
-    display: 'flex'
+    display: 'flex',
+    height: '70%'
   },
   text: {
     fontSize: 18,

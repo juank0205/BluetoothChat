@@ -125,7 +125,10 @@ export default function useBle() {
   };
 
   const connect = async id => {
-    if (await isConnected()) return false;
+    if (await isConnected()) {
+      ToastAndroid.show("Already connected", ToastAndroid.SHORT);
+      return false;
+    }
     else {
       await BluetoothSerial.connect(id)
         .then(res => {
@@ -133,12 +136,15 @@ export default function useBle() {
           setConnected(true)
           ToastAndroid.show(res.message, ToastAndroid.SHORT);
         })
-        .catch(err => console.log(err));
+        .catch(err => ToastAndroid.show(err.message, ToastAndroid.SHORT));
     }
   }
 
   const disconnect = async () => {
-    if (!(await isConnected())) return false;
+    if (!await isConnected()) {
+      ToastAndroid.show("Not connected", ToastAndroid.SHORT);
+      return false;
+    }
     else {
       await BluetoothSerial.disconnect()
         .then(res => {
