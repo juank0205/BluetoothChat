@@ -1,20 +1,32 @@
 import {
-  View,
-  Button,
-  Text
+  StyleSheet,
+  SafeAreaView,
 } from 'react-native'
+import InputText from '../components/InputText';
 
 const Chat = ({ navigation }) => {
 
   return (
-    <>
-      <Text>"SI"</Text>
-    </>
+    <SafeAreaView style={styles.container}>
+      <InputText />
+    </SafeAreaView>
   );
 }
-   /*
-      <TopMenu />
-      <ChatHistory />
-      <InputText />
-      */
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  KeyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollMessages: {
+    flex: 1,
+    justifyContent: 'flex-end'
+  },
+  messages: {
+    flex: 1,
+  }
+})
+
 export default Chat;
